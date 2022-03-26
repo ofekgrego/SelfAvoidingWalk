@@ -3,10 +3,11 @@ from tkinter import *
 from array import *
 import tkinter
 import math
+import time
 
-WindowX = 500
-WindowY = 500
-lines = 3
+WindowX = 700
+WindowY = 700
+lines = 6
 
 grid = [[False]*lines for _ in range(lines)]
 steps = []
@@ -89,10 +90,11 @@ def findNext(oriArr):
     stop = False
     while((stop == False) & (len(arr) > 0)):
         P = random.choice(arr)
-        if steps in failure and failure[steps] == P:
-            arr.remove(P)
-            print("failure")
-        else:
+        # if steps in failure and failure[steps] == P:
+        #     arr.remove(P)
+        #     print("failure")
+        # else:
+        if(True):
             if(P == 'L'):
                 if(placeX != 0):
                     if(grid[placeX-1][placeY] == False):
@@ -145,26 +147,40 @@ def findNext(oriArr):
                         arr.remove('D')
                 else:
                     arr.remove('D')
-    if(len(arr) == 0):
-        P = steps[len(steps)-1]
-        steps.pop(-1)
-        grid[placeX][placeY] = False
-        if (P == 'L'):
-                placeX += 1
-        elif (P == 'R'):
-                placeX -= 1
-        elif (P == 'U'):
-                placeY += 1
-        elif (P == 'D'):
-                placeY -= 1
-        failure.__setitem__(steps, P)
-        # arr = ['L','R','U','D']
-        # arr.remove(P)
-        findNext(oriArr)
+    # if(len(arr) == 0):
+    #     P = steps[len(steps)-1]
+    #     steps.pop(-1)
+    #     grid[placeX][placeY] = False
+    #     if (P == 'L'):
+    #             placeX += 1
+    #     elif (P == 'R'):
+    #             placeX -= 1
+    #     elif (P == 'U'):
+    #             placeY += 1
+    #     elif (P == 'D'):
+    #             placeY -= 1
+    #     failure.__setitem__(steps, P)
+    #     # arr = ['L','R','U','D']
+    #     # arr.remove(P)
+    #     mainCanvas.delete(ALL)
+    #     drawNew()
+    #     mainCanvas.after(100, findNext, oriArr)
+    if(len(arr) == 0 & checkIfFinish() == False):
+        steps = []
+        grid = [[False]*lines for _ in range(lines)]
+        placeX,placeY = SplaceX,SplaceY
+        grid[SplaceX][SplaceY] = True
+        mainCanvas.delete(ALL)
+        drawNew()
+    draw()
+    if(checkIfFinish() == False):
+        mainCanvas.after(1, findNext, ['L', 'R', 'U', 'D'])
 
-while(checkIfFinish() == False):
-    findNext(['L','R','U','D'])
-drawNew()
+draw()
+findNext(['L','R','U','D'])
+
+# while(checkIfFinish() == False):
+#     findNext(['L','R','U','D'])
 print(steps)
 
 root.mainloop()
