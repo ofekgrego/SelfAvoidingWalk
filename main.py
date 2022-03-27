@@ -1,18 +1,32 @@
 import random
 from tkinter import *
-from array import *
-import tkinter
 import math
-import time
+import sys
 
-WindowX = 700
-WindowY = 700
-lines = 4
 
+
+sys.setrecursionlimit(1000000000)
+WindowX = 1000
+WindowY = 1000
+lines = 6
+speed = 1
+SplaceX, SplaceY = 0,0
+
+color = [(217, 237, 146),(24,78,119),(217,237,146)]
+no_steps = int(lines*lines/2)+1
+gradient = []
+for i in range(len(color)-2):
+    for j in range(no_steps):
+        rgb = (int(color[i][0]+(color[i+1][0]-color[i][0])*j/no_steps),int(color[i][1]+(color[i+1][1]-color[i][1])*j/no_steps),int(color[i][2]+(color[i+1][2]-color[i][2])*j/no_steps))
+        gradient.append('%02x%02x%02x' % rgb)
+gradient.extend(list(reversed(gradient)))
+
+func = 0
+blocksArr = []
+linesArr = []
 grid = [[False]*lines for _ in range(lines)]
 steps = []
 failure = {}
-SplaceX, SplaceY = 0,0
 placeX, placeY = SplaceX,SplaceY
 grid[SplaceX][SplaceY] = True
 
@@ -32,60 +46,19 @@ for i in range(lines):
         mainCanvas.create_text(i*(WindowX/lines)+12,j * (WindowY / lines)+5,text=str(i) + ", " + str(j), font=('Helvetica',str(math.floor(50/lines))))
 
 def draw():
-    mainCanvas.create_rectangle(WindowX/lines*(placeX+0.25),
+    global blocksArr
+
+    rect = mainCanvas.create_rectangle(WindowX/lines*(placeX+0.25),
                                 WindowY / lines * (placeY+0.25),
                                 WindowX/lines*(placeX+0.75),
-                                WindowY/lines*(placeY+0.75),fill="#F00")
-
-def drawNew():
-    for i in range(lines):
-        mainCanvas.create_line(0, i * (WindowX / lines), WindowY, i * (WindowX / lines), fill="#000")
-        mainCanvas.create_line(i * (WindowY / lines), 0, i * (WindowY / lines), WindowX, fill="#000")
-
-    for i in range(lines):
-        for j in range(lines):
-            mainCanvas.create_text(i * (WindowX / lines) + 12, j * (WindowY / lines) + 5, text=str(i) + ", " + str(j),
-                                   font=('Helvetica', str(math.floor(50 / lines))))
-
-    for i in range(lines):
-        for j in range(lines):
-            if(grid[i][j] == True):
-                mainCanvas.create_rectangle(WindowX/lines*(i+0.25),
-                                WindowY / lines * (j+0.25),
-                                WindowX/lines*(i+0.75),
-                                WindowY/lines*(j+0.75),fill="#F00")
-    placeX,placeY = SplaceX,SplaceY
-    for P in steps:
-        if (P == 'L'):
-                    placeX -= 1
-                    mainCanvas.create_line(WindowX / lines * (placeX + 1.25), WindowY / lines * (placeY + 0.5),
-                                           WindowX / lines * (placeX + 0.75), WindowY / lines * (placeY + 0.5), width=3)
-        elif (P == 'R'):
-                    placeX += 1
-                    mainCanvas.create_line(WindowX / lines * (placeX - 0.25), WindowY / lines * (placeY + 0.5),
-                                           WindowX / lines * (placeX + 0.25), WindowY / lines * (placeY + 0.5), width=3)
-        elif (P == 'U'):
-                    placeY -= 1
-                    mainCanvas.create_line(WindowX / lines * (placeX + 0.5), WindowY / lines * (placeY + 1.25),
-                                           WindowX / lines * (placeX + 0.5), WindowY / lines * (placeY + 0.75), width=3)
-        elif (P == 'D'):
-                    placeY += 1
-                    mainCanvas.create_line(WindowX / lines * (placeX + 0.5), WindowY / lines * (placeY - 0.25),
-                                           WindowX / lines * (placeX + 0.5), WindowY / lines * (placeY + 0.25), width=3)
-
-
-def checkIfFinish():
-    for i in range(lines):
-        for j in range(lines):
-            if(grid[i][j] == False):
-                return False
-    return True
+                                WindowY/lines*(placeY+0.75),fill="#" + gradient[len(steps)])
+    blocksArr.append(rect)
 
 def findNext(oriArr):
-    global placeX,placeY,grid,steps
-    print(str(placeX) + "  " + str(placeY))
-    print("steps: " + str(steps))
-    print("oriArr: " + str(oriArr))
+    global placeX,placeY,grid,steps,linesArr,blocksArr,func
+    # print(str(placeX) + "  " + str(placeY))
+    # print(steps)
+    # print(failure)
     arr = [item[:] for item in oriArr]
     stop = False
     while((stop == False) & (len(arr) > 0)):
@@ -97,8 +70,9 @@ def findNext(oriArr):
                     placeX -= 1
                     grid[placeX][placeY] = True
                     steps.append('L')
-                    mainCanvas.create_line(WindowX / lines * (placeX + 1.25), WindowY / lines * (placeY + 0.5),
-                                           WindowX / lines * (placeX + 0.75), WindowY / lines * (placeY + 0.5), width=3)
+                    line = mainCanvas.create_line(WindowX / lines * (placeX + 1.25), WindowY / lines * (placeY + 0.5),
+                                           WindowX / lines * (placeX + 0.75), WindowY / lines * (placeY + 0.5),fill="#000", width=3)
+                    linesArr.append(line)
                 else:
                     arr.remove('L')
             else:
@@ -110,8 +84,9 @@ def findNext(oriArr):
                     placeX += 1
                     grid[placeX][placeY] = True
                     steps.append('R')
-                    mainCanvas.create_line(WindowX / lines * (placeX - 0.25), WindowY / lines * (placeY + 0.5),
-                                           WindowX / lines * (placeX + 0.25), WindowY / lines * (placeY + 0.5), width=3)
+                    line = mainCanvas.create_line(WindowX / lines * (placeX - 0.25), WindowY / lines * (placeY + 0.5),
+                                           WindowX / lines * (placeX + 0.25), WindowY / lines * (placeY + 0.5),fill="#000", width=3)
+                    linesArr.append(line)
                 else:
                     arr.remove('R')
             else:
@@ -123,8 +98,9 @@ def findNext(oriArr):
                     placeY -= 1
                     grid[placeX][placeY] = True
                     steps.append('U')
-                    mainCanvas.create_line(WindowX / lines * (placeX + 0.5), WindowY / lines * (placeY + 1.25),
-                                           WindowX / lines * (placeX + 0.5), WindowY / lines * (placeY + 0.75), width=3)
+                    line = mainCanvas.create_line(WindowX / lines * (placeX + 0.5), WindowY / lines * (placeY + 1.25),
+                                           WindowX / lines * (placeX + 0.5), WindowY / lines * (placeY + 0.75),fill="#000", width=3)
+                    linesArr.append(line)
                 else:
                     arr.remove('U')
             else:
@@ -136,8 +112,9 @@ def findNext(oriArr):
                     placeY += 1
                     grid[placeX][placeY] = True
                     steps.append('D')
-                    mainCanvas.create_line(WindowX / lines * (placeX + 0.5), WindowY / lines * (placeY - 0.25),
-                                           WindowX / lines * (placeX + 0.5), WindowY / lines * (placeY + 0.25), width=3)
+                    line = mainCanvas.create_line(WindowX / lines * (placeX + 0.5), WindowY / lines * (placeY - 0.25),
+                                           WindowX / lines * (placeX + 0.5), WindowY / lines * (placeY + 0.25),fill="#000", width=3)
+                    linesArr.append(line)
                 else:
                     arr.remove('D')
             else:
@@ -160,25 +137,54 @@ def findNext(oriArr):
             failure.update({tuple(steps): array})
         else:
             failure.update({tuple(steps): [P]})
-        mainCanvas.delete(ALL)
-        drawNew()
+        # mainCanvas.delete(ALL)
+        # drawNew()
+        mainCanvas.delete(blocksArr[-1])
+        mainCanvas.delete(linesArr[-1])
+        blocksArr, linesArr = blocksArr[:-1],linesArr[:-1]
         newArr = [x for x in ['L','R','U','D'] if x not in failure.get(tuple(steps))]
-        mainCanvas.after(100, findNext, newArr)
-        # findNext(newArr)
+        func = mainCanvas.after(speed, findNext, newArr)
     else:
         draw()
-        if(checkIfFinish() == False):
-            mainCanvas.after(100, findNext, ['L', 'R', 'U', 'D'])
-            # findNext(['L', 'R', 'U', 'D'])
-            print(steps)
+        if(len(steps) + 1 != lines*lines):
+        # if(checkIfFinish() == False):
+            func = mainCanvas.after(speed, findNext, ['L', 'R', 'U', 'D'])
         else:
             print("Done!")
+            print(steps)
 
 draw()
 findNext(['L','R','U','D'])
 
+
+def reset(event):
+    global blocksArr,linesArr,gid,steps,failure,SplaceX,SplaceY,placeX,placeY,grid,func
+    if (event.keysym == 'space'):
+        print("Reset")
+        mainCanvas.delete(ALL)
+        for i in range(lines):
+            mainCanvas.create_line(0, i * (WindowX / lines), WindowY, i * (WindowX / lines), fill="#000")
+            mainCanvas.create_line(i * (WindowY / lines), 0, i * (WindowY / lines), WindowX, fill="#000")
+
+        for i in range(lines):
+            for j in range(lines):
+                mainCanvas.create_text(i * (WindowX / lines) + 12, j * (WindowY / lines) + 5,
+                                       text=str(i) + ", " + str(j), font=('Helvetica', str(math.floor(50 / lines))))
+
+        blocksArr = []
+        linesArr = []
+        grid = [[False] * lines for _ in range(lines)]
+        steps = []
+        failure = {}
+        placeX, placeY = SplaceX, SplaceY
+        grid[SplaceX][SplaceY] = True
+        draw()
+        mainCanvas.after_cancel(func)
+        findNext(['L', 'R', 'U', 'D'])
+
+root.bind("<KeyRelease>", reset)
+
 # while(checkIfFinish() == False):
 #     findNext(['L','R','U','D'])
-print(steps)
 
 root.mainloop()
