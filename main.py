@@ -7,7 +7,7 @@ import time
 
 WindowX = 700
 WindowY = 700
-lines = 6
+lines = 4
 
 grid = [[False]*lines for _ in range(lines)]
 steps = []
@@ -90,91 +90,89 @@ def findNext(oriArr):
     stop = False
     while((stop == False) & (len(arr) > 0)):
         P = random.choice(arr)
-        # if steps in failure and failure[steps] == P:
-        #     arr.remove(P)
-        #     print("failure")
-        # else:
-        if(True):
-            if(P == 'L'):
-                if(placeX != 0):
-                    if(grid[placeX-1][placeY] == False):
-                        stop = True
-                        placeX -= 1
-                        grid[placeX][placeY] = True
-                        steps.append('L')
-                        mainCanvas.create_line(WindowX / lines * (placeX + 1.25), WindowY / lines * (placeY + 0.5),
-                                               WindowX / lines * (placeX + 0.75), WindowY / lines * (placeY + 0.5), width=3)
-                    else:
-                        arr.remove('L')
+        if(P == 'L'):
+            if(placeX != 0):
+                if(grid[placeX-1][placeY] == False):
+                    stop = True
+                    placeX -= 1
+                    grid[placeX][placeY] = True
+                    steps.append('L')
+                    mainCanvas.create_line(WindowX / lines * (placeX + 1.25), WindowY / lines * (placeY + 0.5),
+                                           WindowX / lines * (placeX + 0.75), WindowY / lines * (placeY + 0.5), width=3)
                 else:
                     arr.remove('L')
-            elif(P == 'R'):
-                if (placeX != lines - 1):
-                    if(grid[placeX+1][placeY] == False):
-                        stop = True
-                        placeX += 1
-                        grid[placeX][placeY] = True
-                        steps.append('R')
-                        mainCanvas.create_line(WindowX / lines * (placeX - 0.25), WindowY / lines * (placeY + 0.5),
-                                               WindowX / lines * (placeX + 0.25), WindowY / lines * (placeY + 0.5), width=3)
-                    else:
-                        arr.remove('R')
+            else:
+                arr.remove('L')
+        elif(P == 'R'):
+            if (placeX != lines - 1):
+                if(grid[placeX+1][placeY] == False):
+                    stop = True
+                    placeX += 1
+                    grid[placeX][placeY] = True
+                    steps.append('R')
+                    mainCanvas.create_line(WindowX / lines * (placeX - 0.25), WindowY / lines * (placeY + 0.5),
+                                           WindowX / lines * (placeX + 0.25), WindowY / lines * (placeY + 0.5), width=3)
                 else:
                     arr.remove('R')
-            elif(P == 'U'):
-                if (placeY != 0):
-                    if(grid[placeX][placeY-1] == False):
-                        stop = True
-                        placeY -= 1
-                        grid[placeX][placeY] = True
-                        steps.append('U')
-                        mainCanvas.create_line(WindowX / lines * (placeX + 0.5), WindowY / lines * (placeY + 1.25),
-                                               WindowX / lines * (placeX + 0.5), WindowY / lines * (placeY + 0.75), width=3)
-                    else:
-                        arr.remove('U')
+            else:
+                arr.remove('R')
+        elif(P == 'U'):
+            if (placeY != 0):
+                if(grid[placeX][placeY-1] == False):
+                    stop = True
+                    placeY -= 1
+                    grid[placeX][placeY] = True
+                    steps.append('U')
+                    mainCanvas.create_line(WindowX / lines * (placeX + 0.5), WindowY / lines * (placeY + 1.25),
+                                           WindowX / lines * (placeX + 0.5), WindowY / lines * (placeY + 0.75), width=3)
                 else:
                     arr.remove('U')
-            elif(P == 'D'):
-                if (placeY != lines - 1):
-                    if (grid[placeX][placeY + 1] == False):
-                        stop = True
-                        placeY += 1
-                        grid[placeX][placeY] = True
-                        steps.append('D')
-                        mainCanvas.create_line(WindowX / lines * (placeX + 0.5), WindowY / lines * (placeY - 0.25),
-                                               WindowX / lines * (placeX + 0.5), WindowY / lines * (placeY + 0.25), width=3)
-                    else:
-                        arr.remove('D')
+            else:
+                arr.remove('U')
+        elif(P == 'D'):
+            if (placeY != lines - 1):
+                if (grid[placeX][placeY + 1] == False):
+                    stop = True
+                    placeY += 1
+                    grid[placeX][placeY] = True
+                    steps.append('D')
+                    mainCanvas.create_line(WindowX / lines * (placeX + 0.5), WindowY / lines * (placeY - 0.25),
+                                           WindowX / lines * (placeX + 0.5), WindowY / lines * (placeY + 0.25), width=3)
                 else:
                     arr.remove('D')
-    # if(len(arr) == 0):
-    #     P = steps[len(steps)-1]
-    #     steps.pop(-1)
-    #     grid[placeX][placeY] = False
-    #     if (P == 'L'):
-    #             placeX += 1
-    #     elif (P == 'R'):
-    #             placeX -= 1
-    #     elif (P == 'U'):
-    #             placeY += 1
-    #     elif (P == 'D'):
-    #             placeY -= 1
-    #     failure.__setitem__(steps, P)
-    #     # arr = ['L','R','U','D']
-    #     # arr.remove(P)
-    #     mainCanvas.delete(ALL)
-    #     drawNew()
-    #     mainCanvas.after(100, findNext, oriArr)
-    if(len(arr) == 0 & checkIfFinish() == False):
-        steps = []
-        grid = [[False]*lines for _ in range(lines)]
-        placeX,placeY = SplaceX,SplaceY
-        grid[SplaceX][SplaceY] = True
+            else:
+                arr.remove('D')
+    if(len(arr) == 0):
+        P = steps[len(steps)-1]
+        steps.pop(-1)
+        grid[placeX][placeY] = False
+        if (P == 'L'):
+                placeX += 1
+        elif (P == 'R'):
+                placeX -= 1
+        elif (P == 'U'):
+                placeY += 1
+        elif (P == 'D'):
+                placeY -= 1
+        if tuple(steps) in failure.keys():
+            array = failure.get(tuple(steps))
+            array.append(P)
+            failure.update({tuple(steps): array})
+        else:
+            failure.update({tuple(steps): [P]})
         mainCanvas.delete(ALL)
         drawNew()
-    draw()
-    if(checkIfFinish() == False):
-        mainCanvas.after(1, findNext, ['L', 'R', 'U', 'D'])
+        newArr = [x for x in ['L','R','U','D'] if x not in failure.get(tuple(steps))]
+        mainCanvas.after(100, findNext, newArr)
+        # findNext(newArr)
+    else:
+        draw()
+        if(checkIfFinish() == False):
+            mainCanvas.after(100, findNext, ['L', 'R', 'U', 'D'])
+            # findNext(['L', 'R', 'U', 'D'])
+            print(steps)
+        else:
+            print("Done!")
 
 draw()
 findNext(['L','R','U','D'])
